@@ -176,7 +176,9 @@ class PosixThread : public EnvThread {
       if (!thread_options.affinity.empty()) {
         cpu_set_t cpuset;
         CPU_ZERO(&cpuset);
-        CPU_SET(thread_options.affinity[index], &cpuset);
+        for (size_t cpu : thread_options.affinity) {
+          CPU_SET(cpu, &cpuset);
+        }
         s = pthread_setaffinity_np(hThread, sizeof(cpu_set_t), &cpuset);
         if (s != 0) {
           auto [err_no, err_msg] = GetSystemError();
